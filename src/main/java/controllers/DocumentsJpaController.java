@@ -3,10 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mycompany.mavenproject1;
+package controllers;
 
-import com.mycompany.mavenproject1.exceptions.NonexistentEntityException;
-import com.mycompany.mavenproject1.exceptions.PreexistingEntityException;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -15,6 +13,11 @@ import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import javax.transaction.UserTransaction;
+import ejbs.Documents;
+import exceptions.NonexistentEntityException;
+import exceptions.PreexistingEntityException;
+import exceptions.RollbackFailureException;
 
 /**
  *
@@ -22,23 +25,30 @@ import javax.persistence.criteria.Root;
  */
 public class DocumentsJpaController implements Serializable {
 
-    public DocumentsJpaController(EntityManagerFactory emf) {
+    public DocumentsJpaController(UserTransaction utx, EntityManagerFactory emf) {
+        this.utx = utx;
         this.emf = emf;
     }
+    private UserTransaction utx = null;
     private EntityManagerFactory emf = null;
 
     public EntityManager getEntityManager() {
         return emf.createEntityManager();
     }
 
-    public void create(Documents documents) throws PreexistingEntityException, Exception {
+    public void create(Documents documents) throws PreexistingEntityException, RollbackFailureException, Exception {
         EntityManager em = null;
         try {
+            utx.begin();
             em = getEntityManager();
-            em.getTransaction().begin();
             em.persist(documents);
-            em.getTransaction().commit();
+            utx.commit();
         } catch (Exception ex) {
+            try {
+                utx.rollback();
+            } catch (Exception re) {
+                throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
+            }
             if (findDocuments(documents.getIdDocuments()) != null) {
                 throw new PreexistingEntityException("Documents " + documents + " already exists.", ex);
             }
@@ -50,14 +60,19 @@ public class DocumentsJpaController implements Serializable {
         }
     }
 
-    public void edit(Documents documents) throws NonexistentEntityException, Exception {
+    public void edit(Documents documents) throws NonexistentEntityException, RollbackFailureException, Exception {
         EntityManager em = null;
         try {
+            utx.begin();
             em = getEntityManager();
-            em.getTransaction().begin();
             documents = em.merge(documents);
-            em.getTransaction().commit();
+            utx.commit();
         } catch (Exception ex) {
+            try {
+                utx.rollback();
+            } catch (Exception re) {
+                throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
+            }
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
                 Integer id = documents.getIdDocuments();
@@ -73,11 +88,11 @@ public class DocumentsJpaController implements Serializable {
         }
     }
 
-    public void destroy(Integer id) throws NonexistentEntityException {
+    public void destroy(Integer id) throws NonexistentEntityException, RollbackFailureException, Exception {
         EntityManager em = null;
         try {
+            utx.begin();
             em = getEntityManager();
-            em.getTransaction().begin();
             Documents documents;
             try {
                 documents = em.getReference(Documents.class, id);
@@ -86,7 +101,14 @@ public class DocumentsJpaController implements Serializable {
                 throw new NonexistentEntityException("The documents with id " + id + " no longer exists.", enfe);
             }
             em.remove(documents);
-            em.getTransaction().commit();
+            utx.commit();
+        } catch (Exception ex) {
+            try {
+                utx.rollback();
+            } catch (Exception re) {
+                throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
+            }
+            throw ex;
         } finally {
             if (em != null) {
                 em.close();

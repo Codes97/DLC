@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mycompany.mavenproject1;
+package ejbs;
 
 import java.io.Serializable;
 import javax.persistence.Basic;
@@ -31,7 +31,6 @@ public class Documents implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @Basic(optional = false)
     @Column(name = "idDocuments")
     private Integer idDocuments;
     @Column(name = "title")
@@ -92,7 +91,7 @@ public class Documents implements Serializable {
 
     @Override
     public String toString() {
-        return "com.mycompany.mavenproject1.Documents[ idDocuments=" + idDocuments + " ]";
+        return "jpa.Documents[ idDocuments=" + idDocuments + " ]";
     }
     
 }
