@@ -5,31 +5,29 @@
  */
 package controllers;
 
+import ejbs.Words;
 import exceptions.NonexistentEntityException;
 import exceptions.PreexistingEntityException;
 import exceptions.RollbackFailureException;
-import ejbs.Words;
-import java.io.Serializable;
-import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import javax.transaction.UserTransaction;
+import java.io.Serializable;
+import java.util.List;
 
 /**
  *
  * @author John
  */
 public class WordsJpaController implements Serializable {
-
-    public WordsJpaController(UserTransaction utx, EntityManagerFactory emf) {
-        this.utx = utx;
+    public WordsJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
-    private UserTransaction utx = null;
+
     private EntityManagerFactory emf = null;
 
     public EntityManager getEntityManager() {
@@ -39,13 +37,13 @@ public class WordsJpaController implements Serializable {
     public void create(Words words) throws PreexistingEntityException, RollbackFailureException, Exception {
         EntityManager em = null;
         try {
-            utx.begin();
             em = getEntityManager();
+            em.getTransaction().begin();
             em.persist(words);
-            utx.commit();
+            em.getTransaction().commit();
         } catch (Exception ex) {
             try {
-                utx.rollback();
+                em.getTransaction().rollback();
             } catch (Exception re) {
                 throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
             }
@@ -63,13 +61,13 @@ public class WordsJpaController implements Serializable {
     public void edit(Words words) throws NonexistentEntityException, RollbackFailureException, Exception {
         EntityManager em = null;
         try {
-            utx.begin();
             em = getEntityManager();
+            em.getTransaction().begin();
             words = em.merge(words);
-            utx.commit();
+            em.getTransaction().commit();
         } catch (Exception ex) {
             try {
-                utx.rollback();
+                em.getTransaction().rollback();
             } catch (Exception re) {
                 throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
             }
@@ -91,8 +89,8 @@ public class WordsJpaController implements Serializable {
     public void destroy(Integer id) throws NonexistentEntityException, RollbackFailureException, Exception {
         EntityManager em = null;
         try {
-            utx.begin();
             em = getEntityManager();
+            em.getTransaction().begin();
             Words words;
             try {
                 words = em.getReference(Words.class, id);
@@ -101,10 +99,10 @@ public class WordsJpaController implements Serializable {
                 throw new NonexistentEntityException("The words with id " + id + " no longer exists.", enfe);
             }
             em.remove(words);
-            utx.commit();
+            em.getTransaction().commit();
         } catch (Exception ex) {
             try {
-                utx.rollback();
+                em.getTransaction().rollback();
             } catch (Exception re) {
                 throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
             }
