@@ -25,12 +25,11 @@ import javax.transaction.UserTransaction;
  */
 public class DocumentsJpaController implements Serializable {
 
-    public DocumentsJpaController(UserTransaction utx, EntityManagerFactory emf) {
-        this.utx = utx;
+    private EntityManagerFactory emf = null;
+
+    public DocumentsJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
-    private UserTransaction utx = null;
-    private EntityManagerFactory emf = null;
 
     public EntityManager getEntityManager() {
         return emf.createEntityManager();
@@ -39,13 +38,13 @@ public class DocumentsJpaController implements Serializable {
     public void create(Documents documents) throws PreexistingEntityException, RollbackFailureException, Exception {
         EntityManager em = null;
         try {
-            utx.begin();
             em = getEntityManager();
+            em.getTransaction().begin();
             em.persist(documents);
-            utx.commit();
+            em.getTransaction().commit();
         } catch (Exception ex) {
             try {
-                utx.rollback();
+                em.getTransaction().rollback();
             } catch (Exception re) {
                 throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
             }
@@ -63,13 +62,13 @@ public class DocumentsJpaController implements Serializable {
     public void edit(Documents documents) throws NonexistentEntityException, RollbackFailureException, Exception {
         EntityManager em = null;
         try {
-            utx.begin();
             em = getEntityManager();
+            em.getTransaction().begin();
             documents = em.merge(documents);
-            utx.commit();
+            em.getTransaction().commit();
         } catch (Exception ex) {
             try {
-                utx.rollback();
+                em.getTransaction().rollback();
             } catch (Exception re) {
                 throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
             }
@@ -91,8 +90,8 @@ public class DocumentsJpaController implements Serializable {
     public void destroy(Integer id) throws NonexistentEntityException, RollbackFailureException, Exception {
         EntityManager em = null;
         try {
-            utx.begin();
             em = getEntityManager();
+            em.getTransaction().begin();
             Documents documents;
             try {
                 documents = em.getReference(Documents.class, id);
@@ -101,10 +100,10 @@ public class DocumentsJpaController implements Serializable {
                 throw new NonexistentEntityException("The documents with id " + id + " no longer exists.", enfe);
             }
             em.remove(documents);
-            utx.commit();
+            em.getTransaction().commit();
         } catch (Exception ex) {
             try {
-                utx.rollback();
+                em.getTransaction().rollback();
             } catch (Exception re) {
                 throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
             }
