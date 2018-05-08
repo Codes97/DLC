@@ -52,19 +52,12 @@ public class Indexador implements Runnable {
             e.printStackTrace();
         }
     }
+
+
     private void flushDiccionario(){
-        //Mete el diccionario en la db y lo limpia, asi puede seguir el proximo libro con el diccionario limpio.
-        Set<String> set = diccionario.keySet();
-        int i = 0;
-        for(String key : set){
-            /*
-            * id = offset+i
-            * if(!palabraExiste){
-            *   InsertarPalabra
-            * }
-            * Insertar Postlist
-            */
-        }
+        DictionaryFlusher df = new DictionaryFlusher(diccionario, offset);
+        Thread t = new Thread(df);
+        t.start();
         diccionario.clear();
     }
 
