@@ -1,11 +1,12 @@
 package entityClasses;
 
+import java.io.Serializable;
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
 @Table(name = "documents", schema = "dlc", catalog = "")
-public class DocumentsEntity {
+public class DocumentsEntity implements Serializable {
     private int idDocument;
     private String nombre;
     private String url;

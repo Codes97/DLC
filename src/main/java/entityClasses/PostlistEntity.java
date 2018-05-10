@@ -1,12 +1,13 @@
 package entityClasses;
 
+import java.io.Serializable;
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
 @Table(name = "postlist", schema = "dlc", catalog = "")
 @IdClass(PostlistEntityPK.class)
-public class PostlistEntity {
+public class PostlistEntity implements Serializable {
     private int idDocuments;
     private int idWord;
     private Integer frequency;

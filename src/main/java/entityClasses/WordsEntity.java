@@ -1,11 +1,12 @@
 package entityClasses;
 
+import java.io.Serializable;
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
 @Table(name = "words", schema = "dlc", catalog = "")
-public class WordsEntity {
+public class WordsEntity implements Serializable {
     private int idWord;
     private String word;
     private Integer maxFrequency;
