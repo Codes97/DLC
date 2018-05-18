@@ -11,7 +11,7 @@ import javax.ws.rs.core.Response;
 
 // Esta clase recibe los pedidos de la web
 
-@Path("/Index")
+@Path("/indexar")
 public class IndexacionEndpoint {
 
     @Inject
@@ -20,6 +20,7 @@ public class IndexacionEndpoint {
     @GET
     @Produces("application/json")
     public Response doGet() {
+        indexService.indexResources();
         return Response.ok("{}").build();
     }
 }

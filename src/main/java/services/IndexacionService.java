@@ -3,6 +3,7 @@ package services;
 import main.Indexador;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.persistence.EntityManagerFactory;
 import java.io.File;
 import java.io.Serializable;
 import java.net.URISyntaxException;
@@ -49,6 +50,8 @@ public class IndexacionService implements Serializable {
     }
 
     private void createThread(ArrayList<File> files,int offset){
+
+
         //Creamos un indexador
         Indexador indexador = new Indexador(files, offset);
         //Creamos el thread

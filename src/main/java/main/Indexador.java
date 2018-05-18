@@ -1,5 +1,7 @@
 package main;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -45,26 +47,19 @@ public class Indexador implements Runnable {
                     }
                 }
             }
-            flushDiccionario();
+            flushDiccionario(file);
         }
         catch(Exception e){
             //Nos dice el error
             e.printStackTrace();
         }
     }
-    private void flushDiccionario(){
-        //Mete el diccionario en la db y lo limpia, asi puede seguir el proximo libro con el diccionario limpio.
-        Set<String> set = diccionario.keySet();
-        int i = 0;
-        for(String key : set){
-            /*
-            * id = offset+i
-            * if(!palabraExiste){
-            *   InsertarPalabra
-            * }
-            * Insertar Postlist
-            */
-        }
+
+
+    private void flushDiccionario(File file){
+        DictionaryFlusher df = new DictionaryFlusher(file, diccionario, offset);
+        Thread t = new Thread(df);
+        t.start();
         diccionario.clear();
     }
 
