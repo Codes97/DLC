@@ -40,7 +40,7 @@
                         <swarm.http.port>8080</swarm.http.port>
                         <swarm.ds.connection.url>jdbc:mysql://localhost:3306/dlc?serverTimezone=UTC</swarm.ds.connection.url>
                         <swarm.ds.username>root</swarm.ds.username>
-                        <swarm.ds.password>root</swarm.ds.password>
+                        <swarm.ds.password>0000</swarm.ds.password>
                         <swarm.ds.name>dlc</swarm.ds.name>
                     </properties>
                 </configuration>
