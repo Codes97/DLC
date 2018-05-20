@@ -1,12 +1,12 @@
 package entityClasses;
 
-import java.io.Serializable;
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
 @Table(name = "words", schema = "dlc", catalog = "")
-@NamedQueries(
+/*@NamedQueries(
         @NamedQuery(name="insertWord",
                 query="INSERT INTO words(idWord, word, maxFrequency, maxDocuments) VALUES(?,?,?,?) " +
                         "ON DUPLICATE KEY UPDATE " +
@@ -15,7 +15,7 @@ import java.util.Objects;
                         "FROM postlist p JOIN words w ON(p.idWord=w.idWord) " +
                         "WHERE w.word = ?), " +
                         "maxDocuments=(SELECT COUNT(*) FROM postlist WHERE idDocument=?)")
-)
+)*/
 
 public class Word implements Serializable {
     private int idWord;

@@ -1,7 +1,7 @@
 package entityClasses;
 
-import java.io.Serializable;
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
@@ -12,6 +12,7 @@ public class Document implements Serializable {
     private String url;
 
     @Id
+    @GeneratedValue
     @Column(name = "idDocument")
     public int getIdDocument() {
         return idDocument;
@@ -55,5 +56,14 @@ public class Document implements Serializable {
     public int hashCode() {
 
         return Objects.hash(idDocument, docName, url);
+    }
+
+    @Override
+    public String toString() {
+        return "Document{" +
+                "idDocument=" + idDocument +
+                ", docName='" + docName + '\'' +
+                ", url='" + url + '\'' +
+                '}';
     }
 }

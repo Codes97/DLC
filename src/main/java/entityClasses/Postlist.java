@@ -1,7 +1,7 @@
 package entityClasses;
 
-import java.io.Serializable;
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
@@ -10,6 +10,15 @@ public class Postlist implements Serializable {
     private int idDocument;
     private int idWord;
     private Integer frequency;
+
+    public Postlist() {
+    }
+
+    public Postlist(int idDocument, int idWord, Integer frequency) {
+        this.idDocument = idDocument;
+        this.idWord = idWord;
+        this.frequency = frequency;
+    }
 
     @Id
     @Column(name = "idDocument")

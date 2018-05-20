@@ -9,6 +9,14 @@ public class PostlistPK implements Serializable {
     private int idDocument;
     private int idWord;
 
+    public PostlistPK(int idDocument, int idWord) {
+        this.idDocument = idDocument;
+        this.idWord = idWord;
+    }
+
+    public PostlistPK() {
+    }
+
     @Column(name = "idDocument")
     @Id
     public int getIdDocument() {
