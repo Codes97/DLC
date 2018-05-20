@@ -23,8 +23,7 @@ public class Word implements Serializable {
     private Integer maxFrequency;
     private Integer maxDocuments;
 
-    public Word(int idWord, String word, Integer maxFrequency, Integer maxDocuments) {
-        this.idWord = idWord;
+    public Word(String word, Integer maxFrequency, Integer maxDocuments) {
         this.word = word;
         this.maxFrequency = maxFrequency;
         this.maxDocuments = maxDocuments;
@@ -73,6 +72,13 @@ public class Word implements Serializable {
         this.maxDocuments = maxDocuments;
     }
 
+    public void updateFrequency(int freq) {
+        if (this.getMaxFrequency() <= freq) this.setMaxFrequency(freq);
+    }
+
+    public void incrementMaxDocuments() {
+        this.maxDocuments++;
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -88,5 +94,15 @@ public class Word implements Serializable {
     public int hashCode() {
 
         return Objects.hash(idWord, word, maxFrequency, maxDocuments);
+    }
+
+    @Override
+    public String toString() {
+        return "Word{" +
+                "idWord=" + idWord +
+                ", word='" + word + '\'' +
+                ", maxFrequency=" + maxFrequency +
+                ", maxDocuments=" + maxDocuments +
+                '}';
     }
 }

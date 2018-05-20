@@ -12,7 +12,6 @@ public class Document implements Serializable {
     private String url;
 
     @Id
-    @GeneratedValue
     @Column(name = "idDocument")
     public int getIdDocument() {
         return idDocument;
