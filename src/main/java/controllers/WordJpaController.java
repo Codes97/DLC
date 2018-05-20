@@ -2,16 +2,14 @@ package controllers;
 
 import entityClasses.Word;
 
-import javax.enterprise.context.SessionScoped;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+import javax.enterprise.context.ApplicationScoped;
+import javax.persistence.*;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.List;
 
-@SessionScoped
+@ApplicationScoped
 @Transactional
 public class WordJpaController implements Serializable {
 
@@ -56,4 +54,15 @@ public class WordJpaController implements Serializable {
     public Word findWord(int id) {
         return em.find(Word.class, id) != null ? em.find(Word.class, id) : null;
     }
+
+    public Word findWordByValue(String value) {
+        TypedQuery<Word> tq = em.createQuery("FROM Word WHERE word=?", Word.class);
+        Word w = null;
+        try {
+            w = tq.setParameter(1, value).getSingleResult();
+        } catch (NoResultException ex) {
+        }
+        return w;
+    }
+
 }

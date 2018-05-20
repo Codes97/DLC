@@ -2,16 +2,14 @@ package controllers;
 
 import entityClasses.Document;
 
-import javax.enterprise.context.SessionScoped;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+import javax.enterprise.context.ApplicationScoped;
+import javax.persistence.*;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.List;
 
-@SessionScoped
+@ApplicationScoped
 @Transactional
 public class DocumentJpaController implements Serializable {
 
@@ -54,6 +52,16 @@ public class DocumentJpaController implements Serializable {
     }
 
     public Document findDocument(int id) {
-        return em.find(Document.class, id) != null ? em.find(Document.class, id) : null;
+        return em.find(Document.class, id);
+    }
+
+    public Document fingDocumentByUrl(String value) {
+        TypedQuery<Document> tq = em.createQuery("FROM Document WHERE url=?", Document.class);
+        Document doc = null;
+        try {
+            doc = tq.setParameter(1, value).getSingleResult();
+        } catch (NoResultException ex) {
+        }
+        return doc;
     }
 }
