@@ -13,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -25,6 +26,7 @@ public class IIndex {
     @Inject
     PostlistJpaController plCon;
     private Hashtable<String, Integer> diccionario = new Hashtable<String, Integer>();
+    private Hashtable<String, Word> vocabulario = new Hashtable<String, Word>();
     private ArrayList<File> files = new ArrayList<File>();
 
     private void obtenerArchivos() {
@@ -67,32 +69,28 @@ public class IIndex {
     }
 
     private void flush(File file) {
-        String path = file.getPath();
         Document doc = new Document();
         doc.setDocName(file.getName());
-        doc.setUrl(path);
+        doc.setUrl(file.getPath());
         docCon.create(doc);
+        int docId = docCon.fingDocumentByUrl(file.getPath()).getIdDocument();
 
         for (Map.Entry<String, Integer> e : diccionario.entrySet()) {
-            Word temp = wordCon.findWordByValue(e.getKey());
+            Word temp = vocabulario.get(e.getKey());
             if (temp == null) {
                 temp = new Word(e.getKey(), e.getValue(), 1);
                 wordCon.create(temp);
+                vocabulario.put(e.getKey(), wordCon.findWordByValue(e.getKey()));
             } else {
                 temp.updateFrequency(e.getValue());
                 temp.incrementMaxDocuments();
                 wordCon.edit(temp);
             }
-
             Postlist pl = new Postlist();
-            doc = docCon.fingDocumentByUrl(path);
-            temp = wordCon.findWordByValue(e.getKey());
-            pl.setIdWord(temp.getIdWord());
-            pl.setIdDocument(doc.getIdDocument());
+            pl.setIdDocument(docId);
+            pl.setIdWord(vocabulario.get(e.getKey()).getIdWord());
             pl.setFrequency(e.getValue());
-            plCon.create(pl);
         }
-        System.out.println(file.getName());
     }
 
     private String checkPalabra(String palabra) {
@@ -103,5 +101,24 @@ public class IIndex {
     public void index() {
         obtenerArchivos();
         cargarArchivos();
+    }
+
+    public ArrayList<File> getFiles() {
+        //Array temporal para pasarle a cada indexador los archivos
+        ArrayList<File> files = new ArrayList<>();
+
+        //Esto sirve para obtener los libros de la carpeta Resources.
+        ClassLoader classLoader = getClass().getClassLoader();
+        File dir = new File(classLoader.getResource("Files").getFile());
+
+        //Obtener la lista de archivos de un directorio
+        File[] directoryListing = dir.listFiles();
+        if (directoryListing != null) {
+            for (int i = 0; i < directoryListing.length; i++) {
+                //Agregamos al array temporal el archivo
+                files.add(directoryListing[i]);
+            }
+        }
+        return files;
     }
 }
