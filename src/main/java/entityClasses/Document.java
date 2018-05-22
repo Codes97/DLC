@@ -1,15 +1,15 @@
 package entityClasses;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
 @Table(name = "documents", schema = "dlc", catalog = "")
-public class Document implements Serializable {
+public class Document {
     private int idDocument;
     private String docName;
     private String url;
+    private String vUrl;
 
     @Id
     @Column(name = "idDocument")
@@ -41,6 +41,16 @@ public class Document implements Serializable {
         this.url = url;
     }
 
+    @Basic
+    @Column(name = "vUrl")
+    public String getvUrl() {
+        return vUrl;
+    }
+
+    public void setvUrl(String vUrl) {
+        this.vUrl = vUrl;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -48,21 +58,13 @@ public class Document implements Serializable {
         Document document = (Document) o;
         return idDocument == document.idDocument &&
                 Objects.equals(docName, document.docName) &&
-                Objects.equals(url, document.url);
+                Objects.equals(url, document.url) &&
+                Objects.equals(vUrl, document.vUrl);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(idDocument, docName, url);
-    }
-
-    @Override
-    public String toString() {
-        return "Document{" +
-                "idDocument=" + idDocument +
-                ", docName='" + docName + '\'' +
-                ", url='" + url + '\'' +
-                '}';
+        return Objects.hash(idDocument, docName, url, vUrl);
     }
 }

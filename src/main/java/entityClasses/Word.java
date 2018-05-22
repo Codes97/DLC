@@ -1,36 +1,15 @@
 package entityClasses;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
 @Table(name = "words", schema = "dlc", catalog = "")
-/*@NamedQueries(
-        @NamedQuery(name="insertWord",
-                query="INSERT INTO words(idWord, word, maxFrequency, maxDocuments) VALUES(?,?,?,?) " +
-                        "ON DUPLICATE KEY UPDATE " +
-                        "maxFrequency=" +
-                        "(SELECT MAX(p.frequency) " +
-                        "FROM postlist p JOIN words w ON(p.idWord=w.idWord) " +
-                        "WHERE w.word = ?), " +
-                        "maxDocuments=(SELECT COUNT(*) FROM postlist WHERE idDocument=?)")
-)*/
-
-public class Word implements Serializable {
+public class Word {
     private int idWord;
     private String word;
     private Integer maxFrequency;
     private Integer maxDocuments;
-
-    public Word(String word, Integer maxFrequency, Integer maxDocuments) {
-        this.word = word;
-        this.maxFrequency = maxFrequency;
-        this.maxDocuments = maxDocuments;
-    }
-
-    public Word() {
-    }
 
     @Id
     @Column(name = "idWord")
@@ -72,13 +51,6 @@ public class Word implements Serializable {
         this.maxDocuments = maxDocuments;
     }
 
-    public void updateFrequency(int freq) {
-        if (this.getMaxFrequency() <= freq) this.setMaxFrequency(freq);
-    }
-
-    public void incrementMaxDocuments() {
-        this.maxDocuments++;
-    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -94,15 +66,5 @@ public class Word implements Serializable {
     public int hashCode() {
 
         return Objects.hash(idWord, word, maxFrequency, maxDocuments);
-    }
-
-    @Override
-    public String toString() {
-        return "Word{" +
-                "idWord=" + idWord +
-                ", word='" + word + '\'' +
-                ", maxFrequency=" + maxFrequency +
-                ", maxDocuments=" + maxDocuments +
-                '}';
     }
 }

@@ -1,24 +1,14 @@
 package entityClasses;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
 @IdClass(PostlistPK.class)
-public class Postlist implements Serializable {
+public class Postlist {
     private int idDocument;
     private int idWord;
     private Integer frequency;
-
-    public Postlist() {
-    }
-
-    public Postlist(int idDocument, int idWord, Integer frequency) {
-        this.idDocument = idDocument;
-        this.idWord = idWord;
-        this.frequency = frequency;
-    }
 
     @Id
     @Column(name = "idDocument")
