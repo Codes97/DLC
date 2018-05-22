@@ -12,6 +12,7 @@ public class Document {
     private String vUrl;
     private String file;
 
+    @Transient
     public String getFile() {
         return file;
     }

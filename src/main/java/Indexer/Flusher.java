@@ -1,6 +1,5 @@
 package Indexer;
 
-import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import controllers.DocumentJpaController;
 import controllers.PostlistJpaController;
 import controllers.WordJpaController;
@@ -11,6 +10,9 @@ import services.IndexacionService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -24,12 +26,18 @@ public class Flusher implements Runnable {
     PostlistJpaController plCon;
 
     private void flush(Dictionary d) {
+        int count = 0;
         Hashtable<String, Integer> tempWords = d.getDictionary();
         Word temp = null;
         Document doc = d.getFile();
         doc.setIdDocument(IndexacionService.DOC_ID);
         docCon.create(doc);
+        docCon.flush();
         for (Map.Entry<String, Integer> e : tempWords.entrySet()) {
+            if (count >= 100) {
+                flushAndClear();
+                count = 0;
+            }
             if (!(IndexacionService.vocabulary.isEmpty())) temp = IndexacionService.vocabulary.get(e.getKey());
             if (temp != null) {
                 temp.updateFrequency(e.getValue());
@@ -48,8 +56,14 @@ public class Flusher implements Runnable {
             pl.setIdWord(temp.getIdWord());
             pl.setFrequency(e.getValue());
             plCon.create(pl);
+            count++;
         }
         IndexacionService.DOC_ID++;
+    }
+
+    private void flushAndClear() {
+        wordCon.flush();
+        plCon.flush();
     }
 
     @Override
@@ -65,7 +79,7 @@ public class Flusher implements Runnable {
                     e.printStackTrace();
                 }
             } else {
-                System.out.println("Starting");
+                System.out.println("Starting flush of " + temp.getFile().getDocName());
                 init = System.nanoTime();
                 flush(temp);
                 end = System.nanoTime();

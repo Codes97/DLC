@@ -18,12 +18,10 @@ public class DocumentJpaController implements Serializable {
 
     public void create(Document document) {
         em.persist(document);
-        em.flush();
     }
 
     public void edit(Document document) {
         em.merge(document);
-        em.flush();
     }
 
     public void destroy(int id) {
@@ -63,6 +61,11 @@ public class DocumentJpaController implements Serializable {
         } catch (NoResultException ex) {
         }
         return doc;
+    }
+
+    public void flush() {
+        em.flush();
+        em.clear();
     }
 
 //    public int getMaxId() {

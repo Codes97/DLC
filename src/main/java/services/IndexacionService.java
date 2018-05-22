@@ -24,7 +24,7 @@ public class IndexacionService implements Serializable {
     @Inject
     GoogleService googleS;
     @Inject
-    Parser parse;
+    Parser parser;
     @Inject
     DocumentJpaController docCon;
     @Inject
@@ -38,10 +38,12 @@ public class IndexacionService implements Serializable {
     }
 
     public void startIndexing() {
-        Thread t = new Thread(flusher);
-        t.start();
+        Thread flusherT = new Thread(flusher);
+        Thread parserT = new Thread(parser);
+        flusherT.start();
+        parserT.start();
         try {
-            parse.parseFiles(googleS.getFiles());
+            googleS.downloadFiles();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (GeneralSecurityException e) {

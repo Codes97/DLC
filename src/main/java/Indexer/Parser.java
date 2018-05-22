@@ -1,12 +1,13 @@
 package Indexer;
 
 import entityClasses.Document;
+import services.GoogleService;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.util.ArrayList;
 
 @ApplicationScoped
-public class Parser {
+public class Parser implements Runnable {
     private static boolean finished = false;
     private static ArrayList<Dictionary> dictionaries = new ArrayList<Dictionary>();
 
@@ -23,12 +24,11 @@ public class Parser {
         for (Document f : filesToParse) {
             parseFile(f);
         }
-        finished = true;
     }
 
     private void parseFile(Document file) {
         Dictionary d = new Dictionary(file);
-        String[] str = file.getFile().split(" ");
+        String[] str = file.getFile().split("(?U)[^\\p{IsAlphabetic}']+");//("[(?U)\\P{L}+\\s]");
         for (int i = 0; i < str.length; i++) {
             str[i] = checkWord(str[i]);
             if (!str[i].equals(" ") && !str[i].isEmpty()) {
@@ -41,6 +41,24 @@ public class Parser {
     private String checkWord(String word) {
         word = word.replaceAll("([.,\\-\"()'°ª:;¿?_*|~€¬&=!¡<>\\[\\]#@«»$%]|[0-9])+", "");
         return word;
+    }
+
+    @Override
+    public void run() {
+        Document temp;
+        while (true) {
+            if (GoogleService.hasFinished()) break;
+            if ((temp = GoogleService.getNext()) == null) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                parseFile(temp);
+            }
+        }
+        finished = true;
     }
 
     ;

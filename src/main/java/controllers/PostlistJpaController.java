@@ -21,12 +21,10 @@ public class PostlistJpaController implements Serializable {
 
     public void create(Postlist postlist) {
         em.persist(postlist);
-        em.flush();
     }
 
     public void edit(Postlist postlist) {
         em.merge(postlist);
-        em.flush();
     }
 
     public void destroy(PostlistPK pk) {
@@ -56,5 +54,10 @@ public class PostlistJpaController implements Serializable {
 
     public Postlist findPostlist(PostlistPK pk) {
         return em.find(Postlist.class, pk) != null ? em.find(Postlist.class, pk) : null;
+    }
+
+    public void flush() {
+        em.flush();
+        em.clear();
     }
 }

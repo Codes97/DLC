@@ -18,12 +18,10 @@ public class WordJpaController implements Serializable {
 
     public void create(Word word) {
         em.persist(word);
-        em.flush();
     }
 
     public void edit(Word word) {
         em.merge(word);
-        em.flush();
     }
 
     public void destroy(int id) {
@@ -63,6 +61,11 @@ public class WordJpaController implements Serializable {
         } catch (NoResultException ex) {
         }
         return w;
+    }
+
+    public void flush() {
+        em.flush();
+        em.clear();
     }
 
 //    public int getMaxId() {
