@@ -11,6 +11,17 @@ public class Word {
     private Integer maxFrequency;
     private Integer maxDocuments;
 
+    public Word() {
+    }
+
+    public Word(int idWord, String word, Integer maxFrequency, Integer maxDocuments) {
+
+        this.idWord = idWord;
+        this.word = word;
+        this.maxFrequency = maxFrequency;
+        this.maxDocuments = maxDocuments;
+    }
+
     @Id
     @Column(name = "idWord")
     public int getIdWord() {
@@ -66,5 +77,13 @@ public class Word {
     public int hashCode() {
 
         return Objects.hash(idWord, word, maxFrequency, maxDocuments);
+    }
+
+    public void updateFrequency(Integer value) {
+        if (value >= this.maxFrequency) this.maxFrequency = value;
+    }
+
+    public void incrementMaxDocuments() {
+        this.maxDocuments++;
     }
 }

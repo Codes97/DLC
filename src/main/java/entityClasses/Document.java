@@ -10,6 +10,15 @@ public class Document {
     private String docName;
     private String url;
     private String vUrl;
+    private String file;
+
+    public String getFile() {
+        return file;
+    }
+
+    public void setFile(String file) {
+        this.file = file;
+    }
 
     @Id
     @Column(name = "idDocument")

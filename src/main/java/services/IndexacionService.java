@@ -1,64 +1,52 @@
 package services;
 
-import main.Indexador;
+import Indexer.Flusher;
+import Indexer.Parser;
+import controllers.DocumentJpaController;
+import controllers.WordJpaController;
+import entityClasses.Word;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.persistence.EntityManagerFactory;
-import java.io.File;
+import javax.inject.Inject;
+import java.io.IOException;
 import java.io.Serializable;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
+import java.security.GeneralSecurityException;
+import java.util.Hashtable;
 
 @ApplicationScoped
 public class IndexacionService implements Serializable {
-    //Cantidad de archivos que va a procesar cada indexador
-    public static final int FILES_PER_INDEXER = 20;
-    public static final int OFFSET_PER_THREAD = 50000;
+    public static int DOC_ID;
+    public static int WORD_ID;
+    public static Hashtable<String, Word> vocabulary;/*HASHTABLE*/
 
-
+    @Inject
+    Flusher flusher;
+    @Inject
+    GoogleService googleS;
+    @Inject
+    Parser parse;
+    @Inject
+    DocumentJpaController docCon;
+    @Inject
+    WordJpaController wordCon;
 
     public IndexacionService() {
+        DOC_ID = 0;
+        WORD_ID = 0;
+        vocabulary = new Hashtable<String, Word>();
+
     }
 
-    public void indexResources(){
-        //Array temporal para pasarle a cada indexador los archivos
-        ArrayList<File> files = new ArrayList<>();
-
-        //Esto sirve para obtener los libros de la carpeta Resources.
-        ClassLoader classLoader = getClass().getClassLoader();
-        File dir = new File(classLoader.getResource("Files").getFile());
-
-        //Obtener la lista de archivos de un directorio
-        File[] directoryListing = dir.listFiles();
-        if (directoryListing != null) {
-            for (int i = 0; i < directoryListing.length; i++) {
-                //Agregamos al array temporal el archivo
-                files.add(directoryListing[i]);
-
-                //Cuando llegue a 50 creamos un nuevo hilo de ejecucion con un indexador
-                if((i+1) % FILES_PER_INDEXER == 0){
-                    System.out.println("Creando nuevo thread en i = " + i);
-                    createThread(files,i*OFFSET_PER_THREAD);
-                }
-                //Si hay resto lo metemos en otro hilo con un indexador
-                if(i == directoryListing.length-1 && files.size() > 0){
-                    System.out.println("Creando nuevo thread en i = " + i);
-                    createThread(files, i*OFFSET_PER_THREAD);
-                }
-            }
+    public void startIndexing() {
+        Thread t = new Thread(flusher);
+        t.start();
+        try {
+            parse.parseFiles(googleS.getFiles());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
         }
     }
 
-    private void createThread(ArrayList<File> files,int offset){
-
-
-        //Creamos un indexador
-        Indexador indexador = new Indexador(files, offset);
-        //Creamos el thread
-        Thread t = new Thread(indexador);
-        //Lo iniciamos
-        t.start();
-        //Limpiamos la array temporal
-        files.clear();
-    }
 }
