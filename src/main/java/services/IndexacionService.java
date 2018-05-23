@@ -2,8 +2,6 @@ package services;
 
 import Indexer.Flusher;
 import Indexer.Parser;
-import controllers.DocumentJpaController;
-import controllers.WordJpaController;
 import entityClasses.Word;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -17,7 +15,7 @@ import java.util.Hashtable;
 public class IndexacionService implements Serializable {
     public static int DOC_ID;
     public static int WORD_ID;
-    public static Hashtable<String, Word> vocabulary;/*HASHTABLE*/
+    public static Hashtable<String, Word> vocabulary;
 
     @Inject
     Flusher flusher;
@@ -25,10 +23,6 @@ public class IndexacionService implements Serializable {
     GoogleService googleS;
     @Inject
     Parser parser;
-    @Inject
-    DocumentJpaController docCon;
-    @Inject
-    WordJpaController wordCon;
 
     public IndexacionService() {
         DOC_ID = 0;

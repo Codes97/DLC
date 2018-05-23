@@ -62,7 +62,7 @@ public class GoogleService {
     }
 
     public static boolean hasFinished() {
-        return finished;
+        return (finished && documents.isEmpty());
     }
 
     public static Document getNext() {

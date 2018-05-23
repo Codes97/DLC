@@ -4,12 +4,11 @@ import entityClasses.Postlist;
 import entityClasses.PostlistPK;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+import javax.persistence.*;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.transaction.Transactional;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @ApplicationScoped
@@ -56,8 +55,19 @@ public class PostlistJpaController implements Serializable {
         return em.find(Postlist.class, pk) != null ? em.find(Postlist.class, pk) : null;
     }
 
+    public ArrayList<Postlist> findPostlistByWords(Integer[] value) {
+        TypedQuery<Postlist> tq = em.createQuery("FROM Postlist WHERE idword IN (:idWordList)", Postlist.class);
+        ArrayList<Postlist> postlists = null;
+        try {
+            postlists = new ArrayList<Postlist>(tq.setParameter("idWordList", value).getResultList());
+        } catch (NoResultException ex) {
+        }
+        return postlists;
+    }
+
     public void flush() {
         em.flush();
         em.clear();
     }
+
 }
