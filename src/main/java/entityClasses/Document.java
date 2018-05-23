@@ -6,6 +6,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "documents", schema = "dlc", catalog = "")
 public class Document {
+    private float ranking;
     private int idDocument;
     private String docName;
     private String url;
@@ -19,6 +20,15 @@ public class Document {
 
     public void setFile(String file) {
         this.file = file;
+    }
+
+    @Transient
+    public float getRanking() {
+        return ranking;
+    }
+
+    public void setRanking(float ranking) {
+        this.ranking = ranking;
     }
 
     @Id

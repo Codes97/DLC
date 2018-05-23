@@ -13,12 +13,13 @@ public class Parser implements Runnable {
 
 
     public static boolean hasFinished() {
-        return finished;
+        return (finished && dictionaries.isEmpty());
     }
 
     public static Dictionary getNext() {
         return dictionaries.size() != 0 ? dictionaries.remove(dictionaries.size() - 1) : null;
     }
+
 
     public void parseFiles(ArrayList<Document> filesToParse) {
         for (Document f : filesToParse) {
@@ -38,7 +39,7 @@ public class Parser implements Runnable {
         dictionaries.add(d);
     }
 
-    private String checkWord(String word) {
+    public static String checkWord(String word) {
         word = word.replaceAll("([.,\\-\"()'°ª:;¿?_*|~€¬&=!¡<>\\[\\]#@«»$%]|[0-9])+", "");
         return word;
     }

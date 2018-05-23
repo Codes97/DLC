@@ -1,12 +1,14 @@
 package controllers;
 
 import entityClasses.Document;
+import entityClasses.Postlist;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.transaction.Transactional;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @ApplicationScoped
@@ -53,7 +55,7 @@ public class DocumentJpaController implements Serializable {
         return em.find(Document.class, id);
     }
 
-    public Document fingDocumentByUrl(String value) {
+    public Document findDocumentByUrl(String value) {
         TypedQuery<Document> tq = em.createQuery("FROM Document WHERE url=?", Document.class);
         Document doc = null;
         try {
@@ -61,6 +63,16 @@ public class DocumentJpaController implements Serializable {
         } catch (NoResultException ex) {
         }
         return doc;
+    }
+
+    public ArrayList<Postlist> findDocumentsByWords(Integer[] value) {
+        TypedQuery<Postlist> tq = em.createQuery("FROM Postlist WHERE idword IN (:idWordList)", Postlist.class);
+        ArrayList<Postlist> postlists = null;
+        try {
+            postlists = new ArrayList<Postlist>(tq.setParameter("idWordList", value).getResultList());
+        } catch (NoResultException ex) {
+        }
+        return postlists;
     }
 
     public void flush() {

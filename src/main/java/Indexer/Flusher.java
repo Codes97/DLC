@@ -10,11 +10,9 @@ import services.IndexacionService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @ApplicationScoped
 public class Flusher implements Runnable {
@@ -26,9 +24,9 @@ public class Flusher implements Runnable {
     PostlistJpaController plCon;
 
     private void flush(Dictionary d) {
-        int count = 0;
         Hashtable<String, Integer> tempWords = d.getDictionary();
         Word temp = null;
+        Postlist pl;
         Document doc = d.getFile();
         doc.setIdDocument(IndexacionService.DOC_ID);
         docCon.create(doc);
@@ -47,12 +45,12 @@ public class Flusher implements Runnable {
                 IndexacionService.vocabulary.put(e.getKey(), temp);
                 IndexacionService.WORD_ID++;
             }
-            Postlist pl = new Postlist();
+            pl = new Postlist();
             pl.setIdDocument(doc.getIdDocument());
             pl.setIdWord(temp.getIdWord());
             pl.setFrequency(e.getValue());
             plCon.create(pl);
-            count++;
+            flushAndClear();
         }
         flushAndClear();
         IndexacionService.DOC_ID++;
@@ -66,12 +64,14 @@ public class Flusher implements Runnable {
     @Override
     public void run() {
         Dictionary temp;
-        float init, end;
+        long init, end, total = 0;
         while (true) {
             if (Parser.hasFinished()) break;
             if ((temp = Parser.getNext()) == null) {
                 try {
                     Thread.sleep(100);
+                    System.out.println("Nothing to flush"
+                            + TimeUnit.SECONDS.convert(System.nanoTime(), TimeUnit.NANOSECONDS));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -80,7 +80,11 @@ public class Flusher implements Runnable {
                 init = System.nanoTime();
                 flush(temp);
                 end = System.nanoTime();
-                System.out.println("Time spent to flush " + temp.getFile().getDocName() + ": " + (end - init));
+                total += (end - init);
+                System.out.println("Time spent to flush " + temp.getFile().getDocName() + ": " +
+                        TimeUnit.SECONDS.convert((end - init), TimeUnit.NANOSECONDS));
+                System.out.println("Total time elapsed: " +
+                        TimeUnit.SECONDS.convert(total, TimeUnit.NANOSECONDS));
             }
         }
     }

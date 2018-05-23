@@ -4,6 +4,9 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
+//@NamedQueries(
+//        @NamedQuery(name = "findDocs.byWord", query = "SELECT ")
+//)
 @IdClass(PostlistPK.class)
 public class Postlist {
     private int idDocument;
