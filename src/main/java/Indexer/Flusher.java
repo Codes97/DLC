@@ -34,10 +34,6 @@ public class Flusher implements Runnable {
         docCon.create(doc);
         docCon.flush();
         for (Map.Entry<String, Integer> e : tempWords.entrySet()) {
-            if (count >= 100) {
-                flushAndClear();
-                count = 0;
-            }
             if (!(IndexacionService.vocabulary.isEmpty())) temp = IndexacionService.vocabulary.get(e.getKey());
             if (temp != null) {
                 temp.updateFrequency(e.getValue());
@@ -58,6 +54,7 @@ public class Flusher implements Runnable {
             plCon.create(pl);
             count++;
         }
+        flushAndClear();
         IndexacionService.DOC_ID++;
     }
 
