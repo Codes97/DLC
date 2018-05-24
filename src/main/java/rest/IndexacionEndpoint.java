@@ -14,14 +14,11 @@ import javax.ws.rs.core.Response;
 @Path("/indexar")
 public class IndexacionEndpoint {
 
-    @Inject
-    IndexacionService indexService;
-
     //Metodo de prueba, no hace nada
     @GET
     @Produces("application/json")
     public Response doGet() {
         indexService.startIndexing();
-        return Response.ok("{}").build();
+        return Response.ok("{Response = True}").build();
     }
 }
