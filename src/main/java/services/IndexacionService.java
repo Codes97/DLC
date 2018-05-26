@@ -15,7 +15,8 @@ import java.util.Hashtable;
 public class IndexacionService implements Serializable {
     public static int DOC_ID;
     public static int WORD_ID;
-    public static Hashtable<String, Word> vocabulary;
+    public static final int BATCH_SIZE = 10000;
+    public static Hashtable<String, Integer> vocabulary;
 
     @Inject
     Flusher flusher;
@@ -27,7 +28,7 @@ public class IndexacionService implements Serializable {
     public IndexacionService() {
         DOC_ID = 0;
         WORD_ID = 0;
-        vocabulary = new Hashtable<String, Word>();
+        vocabulary = new Hashtable<String, Integer>();
 
     }
 

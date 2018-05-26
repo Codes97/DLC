@@ -9,6 +9,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @ApplicationScoped
@@ -56,10 +57,10 @@ public class PostlistJpaController implements Serializable {
     }
 
     public ArrayList<Postlist> findPostlistByWords(Integer[] value) {
-        TypedQuery<Postlist> tq = em.createQuery("FROM Postlist WHERE idword IN (:idWordList)", Postlist.class);
+        TypedQuery<Postlist> tq = em.createQuery("FROM Postlist WHERE idWord IN (:idWordList)", Postlist.class);
         ArrayList<Postlist> postlists = null;
         try {
-            postlists = new ArrayList<Postlist>(tq.setParameter("idWordList", value).getResultList());
+            postlists = new ArrayList<Postlist>(tq.setParameter("idWordList", Arrays.asList(value)).getResultList());
         } catch (NoResultException ex) {
         }
         return postlists;

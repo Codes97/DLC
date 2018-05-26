@@ -29,10 +29,10 @@ public class Parser implements Runnable {
 
     private void parseFile(Document file) {
         Dictionary d = new Dictionary(file);
-        String[] str = file.getFile().split("(?U)[^\\p{IsAlphabetic}']+");//("[(?U)\\P{L}+\\s]");
+        String[] str = file.getFile().split("[^\\p{Alpha}]");//("[(?U)\\P{L}+\\s]");
         for (int i = 0; i < str.length; i++) {
             str[i] = checkWord(str[i]);
-            if (!str[i].equals(" ") && !str[i].isEmpty()) {
+            if (!str[i].equals(" ") && !str[i].isEmpty() && !str[i].equals("")) {
                 d.merge(str[i].toLowerCase(), 1, Integer::sum);
             }
         }
