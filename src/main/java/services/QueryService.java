@@ -71,6 +71,12 @@ public class QueryService {
         return sortedDocuments.toArray(new Document[sortedDocuments.size()]);
     }
 
+    /**
+     * Este metodo divide la consulta en palabras individuales y las agrega a
+     * words, si es que existen en el vocabulario.
+     *
+     * @param q es la cadena que representa la consulta del usuario.
+     */
     public void setWords(String q) {
         words = new Hashtable<>();
         String[] w = Parser.splitString(q);
@@ -81,14 +87,29 @@ public class QueryService {
         }
     }
 
+    /**
+     * Este metodo retorna un Array con los ids de las palabras en la consulta.
+     *
+     * @return Array con id de palabras.
+     */
     private Integer[] getIdWords() {
         return words.keySet().toArray(new Integer[words.size()]);
     }
 
+    /**
+     * Busca todas las entradas en la postlist talque el id de la palabra pertenezca
+     * al conjunto de palabras de la consulta y las agrega a postlist.
+     */
     private void setPlist() {
         postlists = plCon.findPostlistByWords(getIdWords());
     }
 
+    /**
+     * Retorna un Array con todos los id de los documentos que tengan relacion con
+     * las palabras de la consulta.
+     *
+     * @return Array con el id de los documentos relevantes a la consulta.
+     */
     private Integer[] getIdDocuments() {
         ArrayList<Integer> idDoc = new ArrayList<>();
         for (Postlist pl : postlists) {
@@ -97,6 +118,10 @@ public class QueryService {
         return idDoc.toArray(new Integer[idDoc.size()]);
     }
 
+    /**
+     * Este metodo busca en la base de datos todos los documentos relevantes encontrados
+     * en la postlist y los agrega a documents.
+     */
     private void setDocuments() {
         documents = new Hashtable<>();
         ArrayList<Document> docs = docCon.findDocumentsById(getIdDocuments());
@@ -105,6 +130,14 @@ public class QueryService {
         }
     }
 
+    /**
+     * Por cada documento relevante recorre las entradas de la postlist buscando
+     * las frecuencias de las palabras que en el se encuentran y que pertenecen a la consulta
+     * Con las frecuencias de cada palabra por cada documento se puede, calcular
+     * el peso individual de cada palabra con su documento y sumando estos pesos
+     * se obtiene el peso total del documento (ranking).
+     * Al finalizar agrega el documento a la lista que será retornada como resultado.
+     */
     private void calculateRanking() {
         sortedDocuments = new ArrayList<>();
         Document docTemp;
@@ -117,11 +150,26 @@ public class QueryService {
         }
     }
 
+    /**
+     * Este metodo calcula el peso individual de una palabra determinada con un documento.
+     *
+     * @param maxDocuments es la cantidad de documentos en los que aparece la palabra.
+     * @param frequency    es la frecuencia de la palabra en el documento.
+     * @return el peso de la palabra en el documento.
+     */
     private float calculateIndividualRanking(Integer maxDocuments, Integer frequency) {
         return (float) frequency * (float) Math.log((float) NUMBER_OF_DOCUMENTS / (float) maxDocuments);
     }
 
+    /**
+     * Este metodo suma los pesos individuales y retorna el ranking del documento.
+     *
+     * @param idDoc    es el id del documento a calcular el ranking.
+     * @param rankTemp es la variable que usa para acumular el ranking.
+     * @return el valor del ranking del documento.
+     */
     private float calculateDocumentRanking(int idDoc, float rankTemp) {
+        rankTemp = 0;
         for (Postlist pl : postlists) {
             if (pl.getIdDocument() == idDoc) {
                 rankTemp += calculateIndividualRanking(words.get(pl.getIdWord()).getMaxDocuments(), pl.getFrequency());
