@@ -14,7 +14,9 @@ import javax.ws.rs.core.Response;
 @Path("/indexar")
 public class IndexacionEndpoint {
 
-    //Metodo de prueba, no hace nada
+    @Inject
+    IndexacionService indexService;
+
     @GET
     @Produces("application/json")
     public Response doGet() {

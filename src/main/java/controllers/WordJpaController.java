@@ -8,6 +8,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @ApplicationScoped
@@ -73,12 +74,10 @@ public class WordJpaController implements Serializable {
         TypedQuery<Word> tq = em.createQuery("FROM Word WHERE word IN (:sWordList)", Word.class);
         ArrayList<Word> words = null;
         try {
-            words = new ArrayList<Word>(tq.setParameter("sWordList", values).getResultList());
+            words = new ArrayList<Word>(tq.setParameter("sWordList", Arrays.asList(values)).getResultList());
         } catch (NoResultException ex) {
         }
         return words;
     }
 
-//    public int getMaxId() {
-//    }
 }

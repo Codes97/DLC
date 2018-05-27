@@ -32,7 +32,7 @@ import java.util.List;
 public class GoogleService {
     private static final String APPLICATION_NAME = "Google Drive API Java Quickstart";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-    private static final String CREDENTIALS_FOLDER = "../resources"; // Directory to store user credentials.
+    private static final String CREDENTIALS_FOLDER = "./resources"; // Directory to store user credentials.
     /**
      * Global instance of the scopes required by this quickstart.
      * If modifying these scopes, delete your previously saved credentials/ folder.

@@ -6,9 +6,12 @@ import entityClasses.Postlist;
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.print.Doc;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.List;
 
 @ApplicationScoped
@@ -65,14 +68,14 @@ public class DocumentJpaController implements Serializable {
         return doc;
     }
 
-    public ArrayList<Postlist> findDocumentsByWords(Integer[] value) {
-        TypedQuery<Postlist> tq = em.createQuery("FROM Postlist WHERE idword IN (:idWordList)", Postlist.class);
-        ArrayList<Postlist> postlists = null;
+    public ArrayList<Document> findDocumentsById(Integer[] values) {
+        TypedQuery<Document> tq = em.createQuery("FROM Document WHERE idDocument IN (:idDocList)", Document.class);
+        ArrayList<Document> documents = null;
         try {
-            postlists = new ArrayList<Postlist>(tq.setParameter("idWordList", value).getResultList());
+            documents = new ArrayList<Document>(tq.setParameter("idDocList", Arrays.asList(values)).getResultList());
         } catch (NoResultException ex) {
         }
-        return postlists;
+        return documents;
     }
 
     public void flush() {
