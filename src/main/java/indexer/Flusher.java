@@ -1,8 +1,7 @@
-package Indexer;
+package indexer;
 
 import controllers.BulkInsert;
-import controllers.DocumentJpaController;
-import controllers.WordJpaController;
+import controllers.DocumentController;
 import entityClasses.Document;
 import services.IndexacionService;
 
@@ -14,17 +13,35 @@ import java.util.concurrent.TimeUnit;
 @ApplicationScoped
 public class Flusher implements Runnable {
     @Inject
-    DocumentJpaController docCon;
+    private DocumentController documentController;
     @Inject
-    BulkInsert bkInserter;
+    private BulkInsert inserter;
 
+    /**
+     * Este metodo se encarga de setear un id al documento del diccionario
+     * y de insertar el mismo en la base de datos.
+     *
+     * @param d es una instancia de la clase Dictionary que posee el docuento
+     *          y las palabras a insertar en la base de datos.
+     */
     private void flush(Dictionary d) {
         Hashtable<String, Integer> tempWords = d.getDictionary();
         Document doc = d.getFile();
         doc.setIdDocument(IndexacionService.DOC_ID);
-        docCon.create(doc);
-        docCon.flush();
-        bkInserter.flushDictionary(tempWords, doc.getIdDocument());
+        insertDocument(doc);
+        inserter.flushDictionary(tempWords, doc.getIdDocument());
+    }
+
+    /**
+     * Este metodo se encarga de insertar el documento correspondiente
+     * al diccionario en la base de datos. Al finalizar incrementa el
+     * id global IndexacionService.DOC_ID en 1.
+     *
+     * @param doc es el documento a insertar en la pase de dato.
+     */
+    private void insertDocument(Document doc) {
+        documentController.create(doc);
+        documentController.flush();
         IndexacionService.DOC_ID++;
     }
 

@@ -1,4 +1,4 @@
-package Indexer;
+package indexer;
 
 import entityClasses.Document;
 
@@ -10,7 +10,7 @@ public class Dictionary {
     private Document file;
 
     public Dictionary(Document file) {
-        this.dictionary = new Hashtable<String, Integer>();
+        this.dictionary = new Hashtable<>();
         this.file = file;
     }
 
@@ -22,15 +22,9 @@ public class Dictionary {
         return dictionary;
     }
 
-    public void setDictionary(Hashtable<String, Integer> dictionary) {
-        this.dictionary = dictionary;
-    }
-
-    public void clear() {
-        dictionary.clear();
-    }
-
-    public void merge(String key, Integer value, BiFunction<? super Integer, ? super Integer, ? extends Integer> remappingFunction) {
+    public void merge(String key,
+                      Integer value,
+                      BiFunction<? super Integer, ? super Integer, ? extends Integer> remappingFunction) {
         dictionary.merge(key, value, remappingFunction);
     }
 }
