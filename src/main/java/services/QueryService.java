@@ -161,6 +161,13 @@ public class QueryService {
         return (float) frequency * (float) Math.log((float) NUMBER_OF_DOCUMENTS / (float) maxDocuments);
     }
 
+    /**
+     * Este metodo suma los pesos individuales y retorna el ranking del documento.
+     *
+     * @param idDoc    es el id del documento a calcular el ranking.
+     * @param rankTemp es la variable que usa para acumular el ranking.
+     * @return el valor del ranking del documento.
+     */
     private float calculateDocumentRanking(int idDoc, float rankTemp) {
         rankTemp = 0;
         for (Postlist pl : postlists) {
