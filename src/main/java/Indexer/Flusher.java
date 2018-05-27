@@ -1,17 +1,14 @@
 package Indexer;
 
+import controllers.BulkInsert;
 import controllers.DocumentJpaController;
-import controllers.PostlistJpaController;
 import controllers.WordJpaController;
 import entityClasses.Document;
-import entityClasses.Postlist;
-import entityClasses.Word;
 import services.IndexacionService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.Hashtable;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @ApplicationScoped
@@ -20,6 +17,8 @@ public class Flusher implements Runnable {
     DocumentJpaController docCon;
     @Inject
     WordJpaController wordCon;
+    @Inject
+    BulkInsert bkInserter;
 
     private void flush(Dictionary d) {
         Hashtable<String, Integer> tempWords = d.getDictionary();
@@ -27,7 +26,7 @@ public class Flusher implements Runnable {
         doc.setIdDocument(IndexacionService.DOC_ID);
         docCon.create(doc);
         docCon.flush();
-        wordCon.bulkInsertStringBuilder(tempWords, doc.getIdDocument());
+        bkInserter.flushDictionary(tempWords, doc.getIdDocument());
         IndexacionService.DOC_ID++;
     }
 

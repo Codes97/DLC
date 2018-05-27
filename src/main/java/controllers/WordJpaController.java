@@ -1,14 +1,15 @@
 package controllers;
 
 import entityClasses.Word;
-import services.IndexacionService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.transaction.Transactional;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @ApplicationScoped
 @Transactional
@@ -16,14 +17,6 @@ public class WordJpaController implements Serializable {
 
     @PersistenceContext(name = "dlc")
     private EntityManager em;
-
-    private String wordInsertString = "INSERT INTO words " +
-            "(idWord, word, maxFrequency, maxDocuments) VALUES ";
-
-    private String wordInsertStringEnd = " ON DUPLICATE KEY UPDATE maxDocuments = maxDocuments + 1;";
-
-    private String plistInsertString = "INSERT INTO postlist " +
-            "(idDocument, idWord, frequency) VALUES ";
 
     public void create(Word word) {
         em.persist(word);
@@ -87,49 +80,4 @@ public class WordJpaController implements Serializable {
         return words;
     }
 
-    public void bulkInsertStringBuilder(Hashtable<String, Integer> tempWords, int docId) {
-        int counter = 0;
-        StringBuilder words = new StringBuilder(wordInsertString);
-        StringBuilder postlist = new StringBuilder(plistInsertString);
-        for (Map.Entry<String, Integer> e : tempWords.entrySet()) {
-            if (IndexacionService.vocabulary.containsKey(e.getKey())) {
-                postlist.append("(" + docId + ", " + IndexacionService.vocabulary.get(e.getKey()) + ", " + e.getValue() + "), ");
-                words.append("(" + IndexacionService.vocabulary.get(e.getKey()) + ", \'" + e.getKey() + "\', " + 1 + ", " + 1 + "), ");
-            } else {
-                words.append("(" + IndexacionService.WORD_ID + ", \'" + e.getKey() + "\', " + 1 + ", " + 1 + "), ");
-                postlist.append("(" + docId + ", " + IndexacionService.WORD_ID + ", " + e.getValue() + "), ");
-                IndexacionService.vocabulary.put(e.getKey(), IndexacionService.WORD_ID);
-                IndexacionService.WORD_ID++;
-            }
-            counter++;
-            if (counter >= IndexacionService.BATCH_SIZE) {
-                words.setLength(words.length() - 2);
-                words.append(wordInsertStringEnd);
-                postlist.setLength(postlist.length() - 2);
-                insertWords(words.toString());
-                insertPostlist(postlist.toString());
-                words = new StringBuilder(wordInsertString);
-                postlist = new StringBuilder(plistInsertString);
-                counter = 0;
-            }
-        }
-        words.setLength(words.length() - 2);
-        words.append(wordInsertStringEnd);
-        postlist.setLength(postlist.length() - 2);
-        insertWords(words.toString());
-        insertPostlist(postlist.toString());
-        IndexacionService.WORD_ID++;
-    }
-
-    private void insertWords(String s) {
-        Query q = em.createNativeQuery(s);
-        q.executeUpdate();
-        em.clear();
-    }
-
-    private void insertPostlist(String s) {
-        Query q = em.createNativeQuery(s);
-        q.executeUpdate();
-        em.clear();
-    }
 }
