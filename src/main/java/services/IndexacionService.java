@@ -1,8 +1,7 @@
 package services;
 
-import Indexer.Flusher;
-import Indexer.Parser;
-import entityClasses.Word;
+import indexer.Flusher;
+import indexer.Parser;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -28,7 +27,7 @@ public class IndexacionService implements Serializable {
     public IndexacionService() {
         DOC_ID = 0;
         WORD_ID = 0;
-        vocabulary = new Hashtable<String, Integer>();
+        vocabulary = new Hashtable<>();
 
     }
 
