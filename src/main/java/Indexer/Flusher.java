@@ -16,8 +16,6 @@ public class Flusher implements Runnable {
     @Inject
     DocumentJpaController docCon;
     @Inject
-    WordJpaController wordCon;
-    @Inject
     BulkInsert bkInserter;
 
     private void flush(Dictionary d) {

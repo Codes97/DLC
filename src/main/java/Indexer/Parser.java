@@ -8,25 +8,48 @@ import java.util.ArrayList;
 
 @ApplicationScoped
 public class Parser implements Runnable {
+    /*
+     * Indica si se terminaron de parsear todos los documentos.
+     * */
     private static boolean finished = false;
+
+    /*
+     *ArrayList que contiene los documentos procesados por el parser (diccionarios).
+     * */
     private static ArrayList<Dictionary> dictionaries = new ArrayList<Dictionary>();
 
-
+    /*
+     * @return true si termino de parsear los documentos y no quedan diccionarios
+     *           para bajar a la base de datos.
+     * */
     public static boolean hasFinished() {
         return (finished && dictionaries.isEmpty());
     }
 
+    /*
+     * @return retorna el ultimo diccionario de la lista para ser bajado a la base
+     *           de datos. Si no quedan mas retorna null.
+     * */
     public static Dictionary getNext() {
         return dictionaries.size() != 0 ? dictionaries.remove(dictionaries.size() - 1) : null;
     }
 
-
-    public void parseFiles(ArrayList<Document> filesToParse) {
-        for (Document f : filesToParse) {
-            parseFile(f);
-        }
+    /*
+     * Este metodo se encarga de reemplazar todos símbolos que no sean letras
+     * @param word es la palabra a chequear.
+     * @return word palabra chequeada.
+     * */
+    public static String checkWord(String word) {
+        word = word.replaceAll("([.,\\-\"()'°ª:;¿?_*|~€¬&=!¡<>\\[\\]#@«»$%]|[0-9])+", "");
+        return word;
     }
 
+    /*
+     * Este metodo se encarga de parsear un documento en palabras individuales,
+     * cuenta ademas la frecuencia de aparición de cada una. Finalmente agrega
+     * el diccionario a la lista.
+     * @param file documento a ser parseado.
+     * */
     private void parseFile(Document file) {
         Dictionary d = new Dictionary(file);
         String[] str = file.getFile().split("[^\\p{Alpha}]");//("[(?U)\\P{L}+\\s]");
@@ -37,11 +60,6 @@ public class Parser implements Runnable {
             }
         }
         dictionaries.add(d);
-    }
-
-    public static String checkWord(String word) {
-        word = word.replaceAll("([.,\\-\"()'°ª:;¿?_*|~€¬&=!¡<>\\[\\]#@«»$%]|[0-9])+", "");
-        return word;
     }
 
     @Override
@@ -61,6 +79,4 @@ public class Parser implements Runnable {
         }
         finished = true;
     }
-
-    ;
 }
