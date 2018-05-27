@@ -6,7 +6,7 @@ import controllers.WordController;
 import entityClasses.Document;
 import entityClasses.Postlist;
 import entityClasses.Word;
-import indexer.Parser;
+import Indexer.Parser;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;

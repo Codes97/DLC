@@ -1,7 +1,7 @@
 package services;
 
-import indexer.Flusher;
-import indexer.Parser;
+import Indexer.Flusher;
+import Indexer.Parser;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;

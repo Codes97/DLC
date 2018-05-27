@@ -1,4 +1,4 @@
-package indexer;
+package Indexer;
 
 import controllers.BulkInsert;
 import controllers.DocumentController;
