@@ -49,6 +49,8 @@ app.controller('BuscadorController',
                     $scope.Response = response.data.Response;
                 });
         };
+
+
     }
     );
 
@@ -59,11 +61,10 @@ app.controller('BuscadorController',
         // articulo cargado inicialmente, como demo para probar la interface visual (luego comentar esta linea)
 
         ///**FUNCIONES**///
-        $scope.Indexar = function () {   
-            params = {url: $scope.DtoSearch}; //Ver como puedo conseguir el Path del archivo
-            $http.get('/dlc') //Agregar URI
+        $scope.Indexar = function () {
+            $http.get('/dlc/indexar/'+$scope.DtoUrl)
                 .then(function (response) {
-                    $scope.Response = response.data.Response;  // variable para luego imprimir                   
+                    $scope.Response = response.data.Response;
                 });
         };
         

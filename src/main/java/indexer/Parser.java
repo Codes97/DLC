@@ -1,4 +1,4 @@
-package Indexer;
+package indexer;
 
 import entityClasses.Document;
 import services.GoogleService;
@@ -22,8 +22,12 @@ public class Parser implements Runnable {
      * @return true si termino de parsear los documentos y no quedan diccionarios
      * para bajar a la base de datos.
      */
-    public static boolean hasFinished() {
+    public static boolean isFinished() {
         return (finished && dictionaries.isEmpty());
+    }
+
+    public static void setFinishedfFalse() {
+        finished = false;
     }
 
     /**
@@ -41,8 +45,8 @@ public class Parser implements Runnable {
      * @return word palabra chequeada.
      */
     private static String checkWord(String word) {
-        word = word.replaceAll("([.,\\-\"()'°ª:;¿?_*|~€¬&=!¡<>\\[\\]#@«»$%]|[0-9])+", "");
-        return word;
+        word = word.replaceAll("([.,\\-\"()'°ª:;¿?_*|~€¬&=!¡<>\\[\\]#@«»$%]|[0-9])+", " ");
+        return word.toLowerCase();
     }
 
     /**
@@ -83,7 +87,7 @@ public class Parser implements Runnable {
     public void run() {
         Document temp;
         while (true) {
-            if (GoogleService.hasFinished()) break;
+            if (GoogleService.isFinished()) break;
             if ((temp = GoogleService.getNext()) == null) {
                 try {
                     Thread.sleep(100);

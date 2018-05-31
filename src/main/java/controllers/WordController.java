@@ -8,6 +8,7 @@ import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Hashtable;
 
 @ApplicationScoped
 @Transactional
@@ -27,7 +28,21 @@ public class WordController implements Serializable {
     }
 
     public int getMaxId() {
-        Query q = em.createQuery("SELECT MAX(w.idWord) FROM Word w");
+        Query q = em.createQuery("SELECT COALESCE(MAX(w.idWord), 0) FROM Word w");
         return (int) q.getSingleResult();
+    }
+
+    public Hashtable<String, Integer> getVocabulary() {
+        TypedQuery<Word> tq = em.createQuery("SELECT w FROM Word w", Word.class);
+        ArrayList<Word> words;
+        Hashtable<String, Integer> voc = new Hashtable<String, Integer>();
+        try {
+            words = new ArrayList<>(tq.getResultList());
+            for (Word word : words) {
+                voc.put(word.getWord(), word.getIdWord());
+            }
+        } catch (NoResultException ex) {
+        }
+        return voc;
     }
 }

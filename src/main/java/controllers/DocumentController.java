@@ -32,8 +32,9 @@ public class DocumentController implements Serializable {
     }
 
     public int getMaxId() {
-        Query q = em.createNativeQuery("SELECT MAX(d.idDocument) FROM Document d");
-        return (int) q.getSingleResult();
+        Query q = em.createNativeQuery("SELECT COALESCE(MAX(d.idDocument), 0) FROM documents d");
+        BigInteger result = new BigInteger(q.getSingleResult().toString());
+        return result.intValue();
     }
 
     public long countDocuments() {
@@ -44,5 +45,16 @@ public class DocumentController implements Serializable {
     public void flush() {
         em.flush();
         em.clear();
+    }
+
+    public boolean existDocumentsUrl(String s) {
+        Integer idDoc = null;
+        try {
+            Query q = em.createQuery("SELECT d.idDocument FROM Document d WHERE d.vUrl = :url");
+            idDoc = (Integer)q.setParameter("url", s).getSingleResult();
+
+        }catch (NoResultException ex) {
+        }
+        return  idDoc != null;
     }
 }

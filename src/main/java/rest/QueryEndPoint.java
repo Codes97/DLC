@@ -15,8 +15,8 @@ public class QueryEndPoint {
     @GET
     @Path("{string}")
     @Produces("application/json")
-    public Response getQuery(@PathParam("string") String Nombre) {
-        if (q.search(Nombre)) {
+    public Response getQuery(@PathParam("string") String nombre) {
+        if (q.search(nombre)) {
             Document[] d = q.getSortedDocuments();
             return Response.ok(d).build();
         }

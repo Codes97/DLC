@@ -14,15 +14,12 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
+import controllers.DocumentController;
 import entityClasses.Document;
 
 import javax.enterprise.context.ApplicationScoped;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
+import javax.inject.Inject;
+import java.io.*;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,28 +38,38 @@ public class GoogleService {
     private static final String CLIENT_SECRET_DIR = "/client_secret.json";
     private static boolean finished = false;
     private static ArrayList<Document> documents = new ArrayList<Document>();
+    @Inject
+    private DocumentController documentController;
 
-    public static String download(File file) throws IOException {
+    public static String download(File file, Drive service) throws IOException {
         String encoding = "UTF-8";
 
-        URL url = new URL(file.getWebContentLink());
-        URLConnection urlCon = url.openConnection();
-        InputStream is = urlCon.getInputStream();
-
-        ByteArrayOutputStream result = new ByteArrayOutputStream();
-
-        byte[] buffer = new byte[1024];
-        int length;
-        while ((length = is.read(buffer)) != -1) {
-            result.write(buffer, 0, length);
-        }
-
-        is.close();
+        String fileId = file.getId();
+        OutputStream result = new ByteArrayOutputStream();
+        service.files().get(fileId)
+                .executeMediaAndDownloadTo(result);
+//        URL url = new URL(file.getWebContentLink());
+//        URLConnection urlCon = url.openConnection();
+//        InputStream is = urlCon.getInputStream();
+//
+//        ByteArrayOutputStream result = new ByteArrayOutputStream();
+//
+//        byte[] buffer = new byte[1024];
+//        int length;
+//        while ((length = is.read(buffer)) != -1) {
+//            result.write(buffer, 0, length);
+//        }
+//
+//        is.close();
         return result.toString();
     }
 
-    public static boolean hasFinished() {
+    public static boolean isFinished() {
         return (finished && documents.isEmpty());
+    }
+
+    public static void setFinishedFalse() {
+        finished = false;
     }
 
     public static Document getNext() {
@@ -91,7 +98,7 @@ public class GoogleService {
         return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
     }
 
-    public void downloadFiles() throws IOException, GeneralSecurityException {
+    public void downloadFiles(String path) throws IOException, GeneralSecurityException {
         // Build a new authorized API client service.
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
         Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
@@ -99,27 +106,22 @@ public class GoogleService {
                 .build();
 
         // Print the names and IDs for up to 10 files.
-        FileList result = service.files().list().setQ("'0B_R7SeoAotsmUUtYendIX04zRjA' in parents")
+        FileList result = service.files().list().setQ("'" + path + "' in parents") //0B_R7SeoAotsmUUtYendIX04zRjA
                 .setPageSize(600)
                 .setFields("nextPageToken, files(id, name, webContentLink, webViewLink)")
                 .execute();
         List<File> files = result.getFiles();
-//        if (files == null || files.isEmpty()) {
-//            System.out.println("No files found.");
-//        } else {
-//            System.out.println("Files:");
-//            for (File file : files) {
-//                System.out.printf("%s (%s |%s | %s)\n", file.getName(), file.getId(), file.getWebContentLink(), file.getWebViewLink());
-//            }
-//        }
+
         Document temp;
         for (File f : files) {
-            temp = new Document();
-            temp.setUrl(f.getWebContentLink());
-            temp.setvUrl(f.getWebViewLink());
-            temp.setDocName(f.getName());
-            temp.setFile(download(f));
-            documents.add(temp);
+            if (!documentController.existDocumentsUrl(f.getWebViewLink())) {
+                temp = new Document();
+                temp.setUrl(f.getWebContentLink());
+                temp.setvUrl(f.getWebViewLink());
+                temp.setDocName(f.getName());
+                temp.setFile(download(f, service));
+                documents.add(temp);
+            }
         }
         finished = true;
     }

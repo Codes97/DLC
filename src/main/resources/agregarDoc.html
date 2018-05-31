@@ -1,56 +1,59 @@
 <!DOCTYPE HTML>
 <html>
-	<head>
-		<title>Trabajo Práctico DLC 2018</title>
-		<meta charset="utf-8" />
-        
-		<link rel="stylesheet" href="assets/css/main2.css" />
-        <script src="scripts/jquery-1.9.1.js" type="text/javascript"></script>
-        <script src="scripts/bootstrap.js" type="text/javascript"></script>
-        <script src="scripts/angular.js"></script>
-        <script src="assets/js/dlc.js"></script>
+<head>
+    <title>Trabajo Práctico DLC 2018</title>
+    <meta charset="utf-8"/>
 
-	</head>
-	<body ng-app="appDlc" ng-controller="gregarNewController">
-			<nav id="nav">
-				<ul class="container">
-					<li><a href="index.html">Inicio</a></li>
-					<li><a href="buscador.html">Buscador</a></li>
-					<li><a href="agregarDoc.html">Agregar Documento</a></li>
-				</ul>
-			</nav>
+    <link rel="stylesheet" href="assets/css/main2.css"/>
+    <script src="scripts/jquery-1.9.1.js" type="text/javascript"></script>
+    <script src="scripts/bootstrap.js" type="text/javascript"></script>
+    <script src="scripts/angular.js"></script>
+    <script src="assets/js/dlc.js"></script>
 
-        <section id="right-nav">
-                        <header>
-							<span class="image"><img src="images/person.png"/></span>
-							<h1 id="title">Integrantes</h1>
+</head>
+<body ng-app="appDlc" ng-controller="AgregarNewController">
+<nav id="nav">
+    <ul class="container">
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="buscador.html">Buscador</a></li>
+        <li><a href="agregarDoc.html">Agregar Documento</a></li>
+    </ul>
+</nav>
 
-				</header>
-						<nav id="names">
-							<ul>
-								<li>Arguello, Santiago</li>
-								<li>Crespo, María Mickaela</li>
-								<li>García Cowan, Eliana Belén</li>
-								<li>Senn, Juan Pablo</li>
-							</ul>
-						</nav>
+<section id="right-nav">
+    <header>
+        <span class="image"><img src="images/person.png"/></span>
+        <h1 id="title">Integrantes</h1>
 
-			</section>
+    </header>
+    <nav id="names">
+        <ul>
+            <li>Arguello, Santiago</li>
+            <li>Crespo, María Mickaela</li>
+            <li>García Cowan, Eliana Belén</li>
+            <li>Senn, Juan Pablo</li>
+        </ul>
+    </nav>
+
+</section>
 
 
-			<div class="wrapper">
-                <div class="content" style="height: auto">
-                            <form class="addDocForm" name="addDocForm" enctype="multipart/form-data" >
-                                <div class="addDoc">
-                                    <label class="label"><strong>Archivo: </strong></label>
-                                    <input type="file" accept=".txt" name="filename" size="40" maxlength="1024">
-                                    <input class="btn agregar" type="submit" value="Agregar" ng-click="Add()"/>
-                                    </div>
-                                
-                            </form>
-                   
-                    </div>
-                    </div>
+<div class="wrapper">
+    <div class="content" style="height: auto">
+        <form class="addDocForm" name="addDocForm" enctype="multipart/form-data">
+            <div class="addDoc">
+                <label class="label"><strong>Carpeta: </strong></label>
+                <input type="text" name="searchInput" ng-model="DtoUrl"
+                       placeholder="Ej: 1rBcT8Awu45P6b1HRYBdHlRiRMCMNJTI9"
+                       ng-keypress="$event.which == 13 && Indexar()"/>
+                <input class="btn agregar" type="submit" value="Agregar" ng-click="Indexar()"/>
+            </div>
+        </form>
 
-	</body>
+        <p>Para acceso a la carpeta del practico usar la url: 0B_R7SeoAotsmUUtYendIX04zRjA</p>
+
+    </div>
+</div>
+
+</body>
 </html>

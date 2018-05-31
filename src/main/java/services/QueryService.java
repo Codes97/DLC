@@ -6,11 +6,13 @@ import controllers.WordController;
 import entityClasses.Document;
 import entityClasses.Postlist;
 import entityClasses.Word;
-import Indexer.Parser;
+import indexer.Parser;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Hashtable;
 
 @ApplicationScoped
@@ -62,9 +64,14 @@ public class QueryService {
             setPlist();
             setDocuments();
             calculateRanking();
+            sortDocuments();
             return true;
         }
         return false;
+    }
+
+    private void sortDocuments() {
+        Collections.sort(sortedDocuments, (o1, o2) -> Float.compare(o2.getRanking(), o1.getRanking()));
     }
 
     public Document[] getSortedDocuments() {
@@ -158,7 +165,7 @@ public class QueryService {
      * @return el peso de la palabra en el documento.
      */
     private float calculateIndividualRanking(Integer maxDocuments, Integer frequency) {
-        return (float) frequency * (float) Math.log((float) NUMBER_OF_DOCUMENTS / (float) maxDocuments);
+        return (float) frequency * (float) Math.log10((float) NUMBER_OF_DOCUMENTS / (float) maxDocuments);
     }
 
     /**

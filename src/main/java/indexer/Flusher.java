@@ -1,8 +1,9 @@
-package Indexer;
+package indexer;
 
 import controllers.BulkInsert;
 import controllers.DocumentController;
 import entityClasses.Document;
+import services.GoogleService;
 import services.IndexacionService;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -16,6 +17,7 @@ public class Flusher implements Runnable {
     private DocumentController documentController;
     @Inject
     private BulkInsert inserter;
+
 
     /**
      * Este metodo se encarga de setear un id al documento del diccionario
@@ -45,12 +47,18 @@ public class Flusher implements Runnable {
         IndexacionService.DOC_ID++;
     }
 
+    private void setGlobalFlags() {
+        Parser.setFinishedfFalse();
+        GoogleService.setFinishedFalse();
+        IndexacionService.canIndex = true;
+    }
+
     @Override
     public void run() {
         Dictionary temp;
         long init, end, total = 0;
         while (true) {
-            if (Parser.hasFinished()) break;
+            if (Parser.isFinished()) break;
             if ((temp = Parser.getNext()) == null) {
                 try {
                     Thread.sleep(100);
@@ -68,5 +76,8 @@ public class Flusher implements Runnable {
                         TimeUnit.SECONDS.convert(total, TimeUnit.NANOSECONDS));
             }
         }
+        System.out.println("Indexation proccess finished in: " +
+                TimeUnit.SECONDS.convert(total, TimeUnit.NANOSECONDS) + " seconds.");
+        setGlobalFlags();
     }
 }
